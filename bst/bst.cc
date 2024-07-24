@@ -54,7 +54,7 @@ public:
             parent->right = new_node;
         }
     }
-
+   
     // 非递归删除
     void NonRecurRemove(const T& val) {
         if (!root_) {
@@ -96,7 +96,7 @@ public:
         }
         delete curr;
     }
-
+    
     // 非递归查询
     bool NonRecurQuery(const T& val) const {
         Node<T>* curr = root_;
@@ -114,6 +114,90 @@ public:
         return false;
     }
 
+    // 递归前序遍历
+    void RecurPreTraverse() const {
+        cout << "Preorder traversal: ";
+        RecurPreTraverse(root_);
+        cout << endl;
+    }
+
+    // 递归中序遍历
+    void RecurInTraverse() const {
+        cout << "Inorder traversal: ";
+        RecurInTraverse(root_);
+        cout << endl;
+    }
+
+    // 递归后序遍历
+    void RecurPostTraverse() const {
+        cout << "Postorder traversal: ";
+        RecurPostTraverse(root_);
+        cout << endl;
+    }
+
+    // 递归层序遍历
+    void RecurLevelTraverse() const {
+        cout << "Levelorder traversal: ";
+        int depth = RecurGetDepth(root_);
+        for (int i = 0; i < depth; ++i) {
+            RecurLevelTraverse(root_, i);
+        }
+        cout << endl;
+    }
+
+// 相关递归操作的内部实现
+private:
+    // 递归前序遍历的具体实现
+    void RecurPreTraverse(Node<T>* node) const {
+        if (!node) {
+            return;
+        }
+        cout << node->data << " ";
+        RecurPreTraverse(node->left);
+        RecurPreTraverse(node->right);
+    }
+
+    // 递归中序遍历的具体实现
+    void RecurInTraverse(Node<T>* node) const {
+        if (!node) {
+            return;
+        }
+        RecurInTraverse(node->left);
+        cout << node->data << " ";
+        RecurInTraverse(node->right);
+    }
+
+    // 递归后序遍历的具体实现
+    void RecurPostTraverse(Node<T>* node) const {
+        if (!node) {
+            return;
+        }        
+        RecurPostTraverse(node->left);
+        RecurPostTraverse(node->right);
+        cout << node->data << " ";
+    }
+
+    // 递归求二叉树的深度
+    int RecurGetDepth(Node<T>* node) const {
+        if (!node) {
+            return 0;
+        }
+        int left_depth = RecurGetDepth(node->left);
+        int right_depth = RecurGetDepth(node->right);
+        return max(left_depth, right_depth) + 1;
+    }
+
+    // 递归层序遍历的具体实现
+    void RecurLevelTraverse(Node<T>* node, int level) const {
+        // 根据二叉树的层数来判断，无需担心节点为空的情况
+        if (level == 0 && node) {
+            cout << node->data << " ";
+            return;
+        }
+        RecurLevelTraverse(node->left, level - 1);
+        RecurLevelTraverse(node->right, level - 1);
+    }
+
 private:
     Node<T>* root_;
     Comp comp_;
@@ -125,9 +209,14 @@ int main() {
     for (int num : arr) {
         bst.NonRecurInsert(num);
     }
-    bst.NonRecurInsert(7);
-    bst.NonRecurRemove(24);
-    cout << bst.NonRecurQuery(24) << endl;
-    cout << bst.NonRecurQuery(7) << endl;
+    // bst.NonRecurInsert(7);
+    // bst.NonRecurRemove(24);
+    // cout << bst.NonRecurQuery(24) << endl;
+    // cout << bst.NonRecurQuery(7) << endl;
+    bst.RecurPreTraverse();
+    bst.RecurInTraverse();
+    bst.RecurPostTraverse();
+    bst.RecurLevelTraverse();
+    getchar();
     return 0;
 }
