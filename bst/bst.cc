@@ -189,8 +189,11 @@ private:
 
     // 递归层序遍历的具体实现
     void RecurLevelTraverse(Node<T>* node, int level) const {
-        // 根据二叉树的层数来判断，无需担心节点为空的情况
-        if (level == 0 && node) {
+        // 因为二叉树可能有些节点没有两个孩子，所以这里必须判断是否为空的情况
+        if (!node) {
+            return;
+        }
+        if (level == 0) {
             cout << node->data << " ";
             return;
         }
