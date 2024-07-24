@@ -55,6 +55,11 @@ public:
         }
     }
    
+    // 递归插入
+    void RecurInsert(const T& val) {
+        root_ = RecurInsert(root_, val);
+    }
+
     // 非递归删除
     void NonRecurRemove(const T& val) {
         if (!root_) {
@@ -97,6 +102,11 @@ public:
         delete curr;
     }
     
+    // 递归删除
+    void RecurRemove(const T& val) {
+        root_ = RecurRemove(root_, val);
+    }
+
     // 非递归查询
     bool NonRecurQuery(const T& val) const {
         Node<T>* curr = root_;
@@ -112,6 +122,11 @@ public:
             }
         }
         return false;
+    }
+   
+    // 递归查询
+    bool RecurQuery(const T& val) const {
+        return RecurQuery(root_, val);
     }
 
     // 递归前序遍历
@@ -147,6 +162,65 @@ public:
 
 // 相关递归操作的内部实现
 private:
+    // 递归插入的具体实现
+    Node<T>* RecurInsert(Node<T>* node, const T& val) {
+        if (!node) {
+            return new Node<T>(val);
+        }
+        if (comp_(val, node->data)) {
+            node->left = RecurInsert(node->left, val);
+        }
+        else if (comp_(node->data, val)) {
+            node->right = RecurInsert(node->right, val);
+        }
+        return node;  // 值相等时需要直接返回节点，所以这里已经包含该情况
+    }
+
+    // 递归删除的具体实现
+    Node<T>* RecurRemove(Node<T>* node, const T& val) {
+        if (!node) {
+            return nullptr;
+        }
+        if (node->data == val) {
+            if (node->left && node->right) {
+                Node<T>* precussor = node->left;
+                while (precussor->right) {
+                    precussor = precussor->right;
+                }
+                node->data = precussor->data;
+                node->left = RecurRemove(node->left, precussor->data);
+            }
+            else {
+                Node<T>* child = node->left ? node->left : node->right;
+                delete node;
+                return child;
+            }
+        }
+        else if (comp_(val, node->data)) {
+            node->left = RecurRemove(node->left, val);
+        }
+        else {
+            node->right = RecurRemove(node->right, val);
+        }
+        return node;
+    }
+
+    // 递归查询的具体实现
+    Node<T>* RecurQuery(Node<T>* node, const T& val) const {
+        if (!node) {
+            return nullptr;
+        }
+        if (comp_(val, node->data)) {
+            return RecurQuery(node->left, val);
+        }
+        else if (comp_(node->data, val)) {
+            return RecurQuery(node->right, val);
+        }
+        else {
+            return node; 
+        }
+    }
+
     // 递归前序遍历的具体实现
     void RecurPreTraverse(Node<T>* node) const {
         if (!node) {
@@ -210,12 +284,13 @@ int main() {
     vector<int> arr{58,24,67,0,34,62,69,5,41,64,78};
     Bst<int> bst;
     for (int num : arr) {
-        bst.NonRecurInsert(num);
+        // bst.NonRecurInsert(num);
+        bst.RecurInsert(num);
     }
-    // bst.NonRecurInsert(7);
-    // bst.NonRecurRemove(24);
-    // cout << bst.NonRecurQuery(24) << endl;
-    // cout << bst.NonRecurQuery(7) << endl;
+    bst.RecurInsert(7);
+    bst.RecurRemove(24);
+    cout << bst.RecurQuery(24) << endl;
+    cout << bst.RecurQuery(7) << endl;
     bst.RecurPreTraverse();
     bst.RecurInTraverse();
     bst.RecurPostTraverse();
