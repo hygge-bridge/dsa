@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <stack>
+#include <queue>
 using namespace std;
 
 // 二叉树的节点定义
@@ -129,10 +131,57 @@ public:
         return RecurQuery(root_, val);
     }
 
+    // 非递归前序遍历
+    void NonRecurPreTraverse() const {
+        if (!root_) {
+            return;
+        }
+        stack<Node<T>*> stk;
+        stk.push(root_);
+        while (!stk.empty()) {
+            Node<T>* node = stk.top();
+            stk.pop();
+            cout << node->data << " ";
+            if (node->right) {
+                stk.push(node->right);
+            }
+            if (node->left) {
+                stk.push(node->left);
+            }
+        }
+        cout << endl;
+    }
+
     // 递归前序遍历
     void RecurPreTraverse() const {
         cout << "Preorder traversal: ";
         RecurPreTraverse(root_);
+        cout << endl;
+    }
+
+    // 非递归中序遍历
+    void NonRecurInTraverse() const {
+        if (!root_) {
+            return;
+        }
+        // 虽然这里出现的两处相同的while是可以优化的，
+        // 但是个人觉得这种写法的可读性很好，所以这里就不优化了
+        Node<T>* curr = root_;
+        stack<Node<T>*> stk;
+        while (curr) {
+            stk.push(curr);
+            curr = curr->left;
+        }
+        while (!stk.empty()) {
+            Node<T>* node = stk.top();
+            stk.pop();
+            cout << node->data << " ";
+            curr = node->right;
+            while (curr) {
+                stk.push(curr);
+                curr = curr->left;
+            }
+        }
         cout << endl;
     }
 
@@ -143,10 +192,58 @@ public:
         cout << endl;
     }
 
+    // 非递归后序遍历
+    void NonRecurPostTraverse() const {
+        if (!root_) {
+            return;
+        }
+        // 将后序遍历的倒序结果保存到res中，然后逆序打印
+        vector<Node<T>*> res;
+        stack<Node<T>*> stk;
+        stk.push(root_);
+        while (!stk.empty()) {
+            Node<T>* node = stk.top();
+            stk.pop();
+            res.push_back(node);
+            if (node->left) {
+                stk.push(node->left);
+            }
+            if (node->right) {
+                stk.push(node->right);
+            }   
+        }
+        for (auto it = res.rbegin(); it != res.rend(); ++it) {
+            cout << (*it)->data << " ";
+        }
+        cout << endl;
+    }
+
     // 递归后序遍历
     void RecurPostTraverse() const {
         cout << "Postorder traversal: ";
         RecurPostTraverse(root_);
+        cout << endl;
+    }
+
+    // 非递归层序遍历
+    void NonRecurLevelTraverse() const {
+        if (!root_) {
+            return;
+        }
+        Node<T>* curr = root_;
+        queue<Node<T>*> que;
+        que.push(curr);
+        while (!que.empty()) {
+            Node<T>* node = que.front();
+            que.pop();
+            cout << node->data << " ";
+            if (node->left) {
+                que.push(node->left);
+            }
+            if (node->right) {
+                que.push(node->right);
+            }
+        }
         cout << endl;
     }
 
@@ -284,17 +381,21 @@ int main() {
     vector<int> arr{58,24,67,0,34,62,69,5,41,64,78};
     Bst<int> bst;
     for (int num : arr) {
-        // bst.NonRecurInsert(num);
-        bst.RecurInsert(num);
+        bst.NonRecurInsert(num);
+        // bst.RecurInsert(num);
     }
-    bst.RecurInsert(7);
-    bst.RecurRemove(24);
-    cout << bst.RecurQuery(24) << endl;
-    cout << bst.RecurQuery(7) << endl;
-    bst.RecurPreTraverse();
-    bst.RecurInTraverse();
-    bst.RecurPostTraverse();
-    bst.RecurLevelTraverse();
+    // bst.RecurInsert(7);
+    // bst.RecurRemove(24);
+    // cout << bst.RecurQuery(24) << endl;
+    // cout << bst.RecurQuery(7) << endl;
+    // bst.RecurPreTraverse();
+    // bst.RecurInTraverse();
+    // bst.RecurPostTraverse();
+    // bst.RecurLevelTraverse();
+    bst.NonRecurPreTraverse();
+    bst.NonRecurInTraverse();
+    bst.NonRecurPostTraverse();
+    bst.NonRecurLevelTraverse();
     getchar();
     return 0;
 }
