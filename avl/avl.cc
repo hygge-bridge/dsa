@@ -59,13 +59,13 @@ private:
             node->left = Insert(node->left, val);
             if (GetHeight(node->left) - GetHeight(node->right) > 1) {
                 Node<T>* child = node->left;
-                // 左孩子的左子树过高
-                if (comp_(GetHeight(child->left), GetHeight(child->right))) {
-                    node = RightRotate(node);
-                }
                 // 左孩子的右子树过高
-                else {
+                if (comp_(GetHeight(child->left), GetHeight(child->right))) {
                     node = LeftRightRotate(node);
+                }
+                // 左孩子的左子树过高，高度相等时也进入该逻辑
+                else {
+                    node = RightRotate(node);
                 }
             }
         }
@@ -73,13 +73,13 @@ private:
             node->right = Insert(node->right, val);
             if (GetHeight(node->right) - GetHeight(node->left) > 1) {
                 Node<T>* child = node->right;
-                // 右孩子的右子树过高
-                if (comp_(GetHeight(child->right), GetHeight(child->left))) {
-                    node = LeftRotate(node);
-                }
                 // 右孩子的左子树过高
-                else {
+                if (comp_(GetHeight(child->right), GetHeight(child->left))) {
                     node = RightLeftRotate(node);
+                }
+                // 右孩子的右子树过高，高度相等时也进入该逻辑
+                else {
+                    node = LeftRotate(node);
                 }
             }
         }
@@ -145,7 +145,7 @@ private:
 
 int main() {
     Avl<int> avl;
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 5; i >= 0; --i) {
         avl.Insert(i);
     }
     getchar();
