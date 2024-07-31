@@ -49,6 +49,11 @@ public:
         root_ = Insert(root_, val);
     }
 
+    // 删除元素
+    void Remove(const T& val) {
+        root_ = Remove(root_, val);
+    }
+
 private:
     // 递归插入元素
     Node<T>* Insert(Node<T>* node, const T& val) {
@@ -87,6 +92,66 @@ private:
             ;  // 该avl不允许值相同的情况
         }
         // 由于插入了一个节点，所以需要更新节点的高度
+        SetHeight(node);
+        return node;
+    }
+
+    // 递归删除元素
+    Node<T>* Remove(Node<T>* node, const T& val) {
+        if (!node) {
+            return nullptr;
+        }
+        if (comp_(val, node->data)) {
+            node->left = Remove(node->left, val);
+            if (GetHeight(node->right) - GetHeight(node->left) > 1) {
+                Node<T>* child = node->right;
+                if (comp_(GetHeight(child->right), GetHeight(child->left))) {
+                    node = RightLeftRotate(node);
+                }
+                else {
+                    node = LeftRotate(node);
+                }
+            }
+        }
+        else if (comp_(node->data, val)) {
+            node->right = Remove(node->right, val);
+            if (GetHeight(node->left) - GetHeight(node->right) > 1) {
+                Node<T>* child = node->left;
+                if (comp_(GetHeight(child->left), GetHeight(child->right))) {
+                    node = LeftRightRotate(node);
+                }
+                else {
+                    node = RightRotate(node);
+                }
+            }
+        }
+        else {
+            // 节点的左右孩子均存在时，删除前驱或后继节点所在子树更高的那一个
+            if (node->left && node->right) {
+                if (comp_(GetHeight(node->left), GetHeight(node->right))) {
+                    Node<T>* precusor = node->left;
+                    while (precusor->right) {
+                        precusor = precusor->right;
+                    }
+                    node->data = precusor->data;
+                    node->left = Remove(node->left, precusor->data);
+                }
+                else {
+                    Node<T>* successor = node->right;
+                    while (successor->left) {
+                        successor = successor->left;
+                    }
+                    node->data = successor->data;
+                    node->right = Remove(node->right, successor->data);
+                }
+            }
+            else {
+                // 只有一个孩子存在或没有孩子存在的情况统一处理
+                Node<T>* child = node->left ? node->left : node->right;
+                delete node;
+                return child;
+            }
+        }
         SetHeight(node);
         return node;
     }
@@ -145,9 +210,10 @@ private:
 
 int main() {
     Avl<int> avl;
-    for (int i = 5; i >= 0; --i) {
+    for (int i = 0; i < 5; ++i) {
         avl.Insert(i);
     }
+    avl.Remove(0);
     getchar();
     return 0;
 }
